@@ -1,6 +1,7 @@
 package pullur;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +21,9 @@ public class UnEmp {
 		System.out.println("enter 2 to see the all jobless people in pullur village");
 		System.out.println("enter to 3  update your details");
 		System.out.println("enter 4 to delete when you got job");
+		System.out.println("enter 5 to search the data");
+
+		
 		int key = sc.nextInt();
 		switch (key) {
 		case 1 :UnEmp.insert();
@@ -30,11 +34,44 @@ public class UnEmp {
 		break;
 		case 4 :UnEmp.delete();
 		break;
+		case 5 :UnEmp.search();
+		break;
+		
 		default:System.out.println("invalid choice, enter above mentioned number correctly");
-		System.out.println("thank you");
 		}
 		
 	}
+		public static void search() {
+			 Scanner sc = new Scanner(System.in);
+				System.out.println("enter name to search ");
+				String name = sc.next();
+				name = name +"%";
+
+//				String qry = "select * from event where title like ?";
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pullurunemplys", "root", "root");
+					PreparedStatement ps = con.prepareStatement("select * from unemployees where name like ?");
+					ps.setString(1, name);
+					ResultSet rs= ps.executeQuery();
+					
+					while(rs.next()==true) {
+						
+						System.out.println(rs.getInt(1));
+						System.out.println(rs.getString(2));
+						System.out.println(rs.getString(3));
+						System.out.println(rs.getInt(4));
+						System.out.println(rs.getString(5));
+				
+					}
+					
+					} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
+				}
+			
+			
+		
 		//to insert details
 		public static void insert() {
 			Scanner sc = new Scanner(System.in);
@@ -49,9 +86,9 @@ public class UnEmp {
 			System.out.println("enter your phone no");
 			String branch = sc.next();
 			
-			Driver d;
+			 
 			try {
-				d = new Driver();
+				Driver d = new Driver();
 				DriverManager.registerDriver(d);
 				Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pullurunemplys", "root", "root");
 				PreparedStatement ps = con.prepareStatement("insert into unemployees values(?,?,?,?,?)");
@@ -101,35 +138,84 @@ public class UnEmp {
 		//UPdate data
 		public static void update() {
 			Scanner sc = new Scanner(System.in);
-			System.out.println("enter your name to update ");
-			String name = sc.next();
-			System.out.println("enter phone number");
-			String phno = sc.next();
-			
-			System.out.println("enter serial number to update");
-			int id = sc.nextInt();
-			
-			
+			System.out.println("enter the serial number to update");
+			int sno = sc.nextInt();
 			
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
-				Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pullurunemplys","root", "root");
-				PreparedStatement ps = con.prepareStatement("update unemployees set name =?,phno=? where sno =?");
 				
-				ps.setString(1,name);
-				ps.setString(2, phno);
-				ps.setInt(3,id);
-
-						
-				int row =ps.executeUpdate();
-				System.out.println(row+"row updated");
+				Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pullurunemplys", "root", "root");
+				PreparedStatement ps = con.prepareStatement("select * from unemployees where sno =?");
+				ps.setInt(1, sno);
+				ResultSet rs = ps.executeQuery();
+				if(rs.next()) {
+					boolean flag = true;
+					while(flag) {
+						System.out.println("enter the option to update");
+						System.out.println("enter 1 to update name");
+						System.out.println("enter 2 to update skills");
+						System.out.println("enter 3 to update year of passed out");
+						System.out.println("enter 4 to update phone number");
+						System.out.println("enter 5 to update exit");
+						int key = sc.nextInt();
+						switch(key) {
+						case 1 :{System.out.println("enter new title");
+									String name = sc.next();
+									ps = con.prepareStatement("update unemployees  set name =? where sno = ?");
+									ps.setString(1, name);
+									ps.setInt(2, sno);
+									int row = ps.executeUpdate();
+									System.out.println(row +"unemployees name updated");
+									break;
+								}
+						case 2 :{
+							System.out.println("enter new skills");
+							String skills = sc.next();
+							ps = con.prepareStatement("update unemployees  set skills =? where sno = ?");
+							ps.setString(1, skills);
+							ps.setInt(2, sno);
+							int row = ps.executeUpdate();
+							System.out.println(row +"unemployees skills updated");
+								break;
+								}
+								case 3 :{
+								System.out.println("enter new year of passeout");
+									String yop = sc.next();
+									ps = con.prepareStatement("update unemployees  set yop =? where sno = ?");
+									ps.setString(1, yop);
+									ps.setInt(2, sno);
+									int row = ps.executeUpdate();
+									System.out.println(row +"unemployees yearof passed out updated");
+									break;
+									}
+			
+										case 4 :{
+											System.out.println("enter new phone number");
+											String phno = sc.next();
+											ps = con.prepareStatement("update unemployees  set phno =? where sno = ?");
+											ps.setString(1, phno);
+											ps.setInt(2, sno);
+											int row = ps.executeUpdate();
+											System.out.println(row +"unemployees phone number updated");
+											break;
+												}
+											case 5 : {
+												flag = false;
+												break;
+													}
+								}
+						}
+		
+					}else 
+						System.out.println("invalid choice to update");
+				rs.close();
 				ps.close();
 				con.close();
-				
 				} catch (ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
 			}
-			}
+			
+		}
 		
 		
 		//For Delete the details
