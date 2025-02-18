@@ -19,7 +19,7 @@ public class UnEmp {
 
 	public static void main(String[] args) {
 		System.out.println("mysql (username : root), (password: root)");
-		System.out.println("hi this yaswanth pillari(6305616996) from pullur village");
+		System.out.println("hi this yaswanth(6305616996) from pullur village");
 
 		boolean flag = true;
 
